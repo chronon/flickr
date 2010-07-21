@@ -21,19 +21,31 @@ class FlickrComponent extends Object {
         );
         $options['http'] = $options + $postDefaults;
 
-        // make the request
+        // try to make the request
         try {
+
             $context = stream_context_create($options);
             $response = @file_get_contents($posting_url, false, $context);
+            // problem connecting or with the posting_url
             if ($response === false) {
-                throw new Exception("Problem reading data from $posting_url");
+                throw new Exception("No response from $posting_url");
             }
-        } catch(Exception $e) {
+
+            // response received, make it an array
+            $response = unserialize($response);
+
+            // check to see if Flickr returned an error
+            if ($response['stat'] == 'fail') {
+                throw new Exception(
+                    'Flickr error code '.$response['code'].': '.$response['message']
+                );
+            }
+
+        } catch (Exception $e) {
             return $e->getMessage();
         }
 
-        // make the response an array
-        return unserialize($response);
+        return $response;
     }
 
 }
