@@ -1,17 +1,19 @@
 <?php
 class FlickrComponent extends Object {
 
-    public function initialize($controller) {
-		Configure::load('Flickr.settings');
-	}
-
     public function flickrRequest($data, $options = array()) {
         // set the posting url
         $postUrl = Configure::read('Flickr.posting_url');
+        if (!$postUrl) {
+            $postUrl = 'http://api.flickr.com/services/rest/';
+        }
 
         // set the post data
         $defaults = Configure::read('Flickr.defaults');
-        $postData = http_build_query($data + $defaults);
+        if (is_array($defaults)) {
+            $data = $data + $defaults;
+        }
+        $postData = http_build_query($data);
 
         // make the request
         try {
@@ -19,11 +21,16 @@ class FlickrComponent extends Object {
 
             // problem connecting or with the posting_url
             if ($response === false) {
-                throw new Exception("No response from $posting_url");
+                throw new Exception("No response from $postUrl");
             }
 
-            // response received, make it an array
-            $response = unserialize($response);
+            // response received, make it an array or unserialize returns false
+            $response = @unserialize($response);
+
+            // a response was received, but could not be unserialized (ie: empty)
+            if ($response === false) {
+                throw new Exception('The response was not usable.');
+            }
 
             // check to see if Flickr returned an error
             if ($response['stat'] == 'fail') {
