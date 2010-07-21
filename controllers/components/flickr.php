@@ -7,25 +7,16 @@ class FlickrComponent extends Object {
 
     public function flickrRequest($data, $options = array()) {
         // set the posting url
-        $posting_url = Configure::read('Flickr.posting_url');
+        $postUrl = Configure::read('Flickr.posting_url');
 
         // set the post data
         $defaults = Configure::read('Flickr.defaults');
-        $postdata = http_build_query($data + $defaults);
+        $postData = http_build_query($data + $defaults);
 
-        // set the http options
-        $postDefaults = array(
-            'method'  => 'POST',
-            'header'  => 'Content-type: application/x-www-form-urlencoded',
-            'content' => $postdata
-        );
-        $options['http'] = $options + $postDefaults;
-
-        // try to make the request
+        // make the request
         try {
+            $response = $this->__doPost($postUrl, $postData, $options);
 
-            $context = stream_context_create($options);
-            $response = @file_get_contents($posting_url, false, $context);
             // problem connecting or with the posting_url
             if ($response === false) {
                 throw new Exception("No response from $posting_url");
@@ -40,11 +31,32 @@ class FlickrComponent extends Object {
                     'Flickr error code '.$response['code'].': '.$response['message']
                 );
             }
-
         } catch (Exception $e) {
             return $e->getMessage();
         }
+        // valid response
+        return $response;
+    }
 
+    private function __doPost($postUrl, $postData, $options = array()) {
+        // set the http options
+        $postDefaults = array(
+            'method'  => 'POST',
+            'header'  => 'Content-type: application/x-www-form-urlencoded',
+            'content' => $postData
+        );
+        // combine any other options with the defaults
+        $postOptions['http'] = $options + $postDefaults;
+
+        // post the request
+        $context = stream_context_create($postOptions);
+        $response = @file_get_contents($postUrl, false, $context);
+
+        // problem connecting or bad url
+        if ($response === false) {
+            return false;
+        }
+        // got something
         return $response;
     }
 
