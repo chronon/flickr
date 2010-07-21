@@ -1,19 +1,26 @@
 <?php
 class FlickrComponent extends Object {
 
-    public function flickrRequest($data, $options = array()) {
-        // set the posting url
+    /**
+     * POST a request to the Flickr API REST service
+     *
+     * @param array $params required The parameters to POST to Flickr per API
+     * @param array $options optional Additional http headers/options
+     * @return array Response from Flickr or string Error message
+     * @author chronon
+     */
+    public function flickrRequest($postData, $options = array()) {
+        // set the posting url, or use the hard-coded default
         $postUrl = Configure::read('Flickr.posting_url');
         if (!$postUrl) {
             $postUrl = 'http://api.flickr.com/services/rest/';
         }
 
-        // set the post data
+        // check for some default values (set in bootstrap or core), combine with data
         $defaults = Configure::read('Flickr.defaults');
         if (is_array($defaults)) {
-            $data = $data + $defaults;
+            $postData = $postData + $defaults;
         }
-        $postData = http_build_query($data);
 
         // make the request
         try {
@@ -45,7 +52,19 @@ class FlickrComponent extends Object {
         return $response;
     }
 
-    private function __doPost($postUrl, $postData, $options = array()) {
+    /**
+     * Do the actual POSTing
+     *
+     * @param string $postUrl required The url to POST to
+     * @param array $postData required The data to be POSTed
+     * @param array $options required Additional http headers/options
+     * @return string Response or false if connection fails
+     * @author chronon
+     */
+    private function __doPost($postUrl, $postData, $options) {
+        // prepare the post data
+        $postData = http_build_query($postData);
+
         // set the http options
         $postDefaults = array(
             'method'  => 'POST',
