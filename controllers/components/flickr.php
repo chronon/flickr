@@ -17,10 +17,7 @@ class FlickrComponent extends Object {
         }
 
         // check for some default values (set in bootstrap or core), combine with data
-        $defaults = Configure::read('Flickr.defaults');
-        if (is_array($defaults)) {
-            $postData = $postData + $defaults;
-        }
+        $postData = Set::merge(Configure::read('Flickr.defaults'), $postData);
 
         // make the request
         try {
