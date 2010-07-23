@@ -1,0 +1,67 @@
+html, body {
+	margin:0;
+	padding:0;
+}
+body {
+	font-family: "Lucida Grande", "Lucida Sans Unicode", Verdana, Helvetica, Arial, sans-serif;
+	background-color: #eee;
+	color: #444;
+}
+a {
+	color: #27D;
+	text-decoration: none;
+}
+a:focus, a:hover, a:active {
+	text-decoration: underline;
+}
+h1, h2 {
+	font-family: "Trebuchet MS", Verdana, sans-serif;
+	margin: 0 0 10px 0;
+	letter-spacing:-1px;
+}
+h1 {
+	padding: 0;
+	font-size: 2em;
+	color: #333;
+}
+pre {
+	font-size: 110%;
+	background: #336666;
+	padding: 20px;
+	color: #fff;
+}
+div#page {
+	width: 900px;
+	background-color: #fff;
+	margin: 20px auto;
+}
+
+/*galleriffic*/
+div#container {
+	padding: 20px;
+}
+.caption {
+	font-weight: bold;
+	font-size: 1.2em;
+	color: #336699;
+}
+
+/*colorbox*/
+div#cb-content {
+	width: 600px;
+	margin-left: 10px;
+	float: left;
+}
+div#cb-photos {
+	background-color: #eee;
+	width: 225px;
+	float: right;
+	margin: 20px 10px 0 0;
+	text-align: center;
+}
+div#cb-photos div {
+	float: left;
+}
+div#cb-photos a img {
+	border: 0;
+}
