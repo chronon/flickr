@@ -3,19 +3,28 @@ class FlickrHelper extends AppHelper {
 
     public $helpers = array('Html');
 
-/**
- * Size options available from Flickr, 'n' in place of empty.
- *
- * @var array
- * @access protected
- * @link http://www.flickr.com/services/api/misc.urls.html
- */
+    // http://www.flickr.com/services/api/misc.urls.html
     protected $_flickrSizes = array(
         '75' => 's',
         '100' => 't',
         '240' => 'm',
         '500' => 'n',
         '1024' => 'b'
+    );
+    protected $_flickrFields = array(
+        'flickr_id',
+        'flickr_secret',
+        'flickr_title',
+        'flickr_datetaken'
+    );
+    protected $_formatDefaults = array('type' => 'div');
+    protected $_linkDefaults = array('escape' => false);
+    protected $_thumbDefaults = array('alt' => '', 'size' => 's');
+    protected $_imgDefaults = array('size' => 'n');
+    protected $_captionDefaults = array(
+        'type' => false,
+        'caption' => null,
+        'location' => 'after'
     );
 
 /**
@@ -32,6 +41,7 @@ class FlickrHelper extends AppHelper {
  * @param array $linkAttribs optional Attributes for the <a> wrapping the thumbnail
  * @param array $thumbAttribs optional Attributes for the <img> containing the thumbnail
  * @param array $imgAttribs optional Size for the large image. Default: 'size' => 'n'
+ * @param array $captionAttribs optional A caption, wrapped in 'type', before or after the thumbnail
  * @return string The wrapped, linked images as HTML
  * @access public
  */
@@ -40,43 +50,42 @@ class FlickrHelper extends AppHelper {
         $formatAttribs = array(),
         $linkAttribs = array(),
         $thumbAttribs = array(),
-        $imgAttribs = array()
+        $imgAttribs = array(),
+        $captionAttribs = array()
     ) {
-        $attribs = array('format', 'link', 'thumb', 'img');
+        $attribs = array('format', 'link', 'thumb', 'img', 'caption');
 
-        // special fields that will use the values returned from Flickr
-        $flickrFields = array('flickr_id', 'flickr_secret', 'flickr_title');
-
-        // format attributes, default = div. could be things like li, p, etc.
-        $defFormatAttribs = array('type' => 'div');
-        $formatAttribs = Set::merge($defFormatAttribs, $formatAttribs);
+        // format attributes, could be things like li, p, etc.
+        $formatAttribs = Set::merge($this->_formatDefaults, $formatAttribs);
         $formatType = $formatAttribs['type'];
         unset($formatAttribs['type']);
 
-        // link attributes, no defaults. could be things like name, id, class, rel, etc.
-        $defLinkAttribs = array('escape' => false);
-        $linkAttribs = Set::merge($defLinkAttribs, $linkAttribs);
+        // link attributes, could be things like name, id, class, rel, etc.
+        $linkAttribs = Set::merge($this->_linkDefaults, $linkAttribs);
 
-        // thumb attributes, default alt is empty, size is s: could be alt, class, id, etc.
-        $defThumbAttribs = array(
-            'alt' => '',
-            'size' => 's'
-        );
-        $thumbAttribs = Set::merge($defThumbAttribs, $thumbAttribs);
+        // thumb attributes, could be alt, class, id, etc.
+        $thumbAttribs = Set::merge($this->_thumbDefaults, $thumbAttribs);
         $thumbSize = $this->__setSize($thumbAttribs['size']);
         unset($thumbAttribs['size']);
 
-        // (large) img attributes, default alt is empty. could be alt, class, id, etc.
-        $defImgAttribs = array('size' => 'n');
-        $imgAttribs = Set::merge($defImgAttribs, $imgAttribs);
+        // (large) img attributes, only valid key actually is 'size'
+        $imgAttribs = Set::merge($this->_imgDefaults, $imgAttribs);
         $imgSize = $this->__setSize($imgAttribs['size']);
         unset($imgAttribs['size']);
+
+        // caption attributes, could be things like div, p, span, etc.
+        $captionAttribs = Set::merge($this->_captionDefaults, $captionAttribs);
+        $captionType = $captionAttribs['type'];
+        $captionLocation = $captionAttribs['location'];
+        $caption = $captionAttribs['caption'];
+        $caption = str_replace('flickr_', '', $caption);
+        unset($captionAttribs['type'], $captionAttribs['location'], $captionAttribs['caption']);
 
         // create an array of flickAttrib if any flickrFields are in use
         foreach ($attribs as $attrib) {
             ${'flickr'.$attrib} = array();
             foreach (${$attrib.'Attribs'} as $k => $v) {
-                if (in_array($v, $flickrFields)) {
+                if (in_array($v, $this->_flickrFields)) {
                     ${'flickr'.$attrib}[$k] = $v;
                 }
             }
@@ -100,18 +109,41 @@ class FlickrHelper extends AppHelper {
             // build the base url to the image
             $base = 'http://farm'.$p['farm'].'.static.flickr.com/'.$p['server'];
             $base .= '/'.$p['id'].'_'.$p['secret'];
-            $result .= $this->Html->tag(
-                $formatType,
-                $this->Html->link(
-                    $this->Html->image(
-                        $base.$thumbSize.'.jpg',
-                        $thumbAttribs
-                    ),
-                    $base.$imgSize.'.jpg',
-                    $linkAttribs
+            // open the wrapper
+            $result .= $this->Html->tag($formatType, null, $formatAttribs);
+            // set the caption to a Flickr val or use the supplied val
+            if ($captionType) {
+                if (isset($p[$caption])) {
+                    $cap = $p[$caption];
+                }
+            }
+            // cpation before the thumbnail
+            if ($captionType && $captionLocation == 'before') {
+                $result .= $this->Html->tag(
+                    $captionType,
+                    $cap,
+                    $captionAttribs
+                );
+            }
+            // the thumbnail wrapped in a href
+            $result .= $this->Html->link(
+                $this->Html->image(
+                    $base.$thumbSize.'.jpg',
+                    $thumbAttribs
                 ),
-                $formatAttribs
+                $base.$imgSize.'.jpg',
+                $linkAttribs
             );
+            // caption after the thumbnail
+            if ($captionType && $captionLocation == 'after') {
+                $result .= $this->Html->tag(
+                    $captionType,
+                    $cap,
+                    $captionAttribs
+                );
+            }
+            // close the wrapper
+            $result .= "</$formatType>\n";
         }
         return $result;
     }
