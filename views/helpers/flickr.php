@@ -17,7 +17,7 @@ class FlickrHelper extends AppHelper {
         'flickr_title',
         'flickr_datetaken'
     );
-    protected $_formatDefaults = array('type' => 'div');
+    protected $_formatDefaults = array('type' => false);
     protected $_linkDefaults = array('escape' => false);
     protected $_thumbDefaults = array('alt' => '', 'size' => 's');
     protected $_imgDefaults = array('size' => 'n');
@@ -53,6 +53,10 @@ class FlickrHelper extends AppHelper {
         $imgAttribs = array(),
         $captionAttribs = array()
     ) {
+        // check if $photos is an array, if not it's probably an error message from the component.
+        if (!is_array($photos)) {
+            return $photos;
+        }
         $attribs = array('format', 'link', 'thumb', 'img', 'caption');
 
         // format attributes, could be things like li, p, etc.
@@ -110,7 +114,9 @@ class FlickrHelper extends AppHelper {
             $base = 'http://farm'.$p['farm'].'.static.flickr.com/'.$p['server'];
             $base .= '/'.$p['id'].'_'.$p['secret'];
             // open the wrapper
-            $result .= $this->Html->tag($formatType, null, $formatAttribs);
+            if ($formatType) {
+                $result .= $this->Html->tag($formatType, null, $formatAttribs);
+            }
             // set the caption to a Flickr val or use the supplied val
             if ($captionType) {
                 if (isset($p[$caption])) {
@@ -143,7 +149,9 @@ class FlickrHelper extends AppHelper {
                 );
             }
             // close the wrapper
-            $result .= "</$formatType>\n";
+            if ($formatType) {
+                $result .= "</$formatType>\n";
+            }
         }
         return $result;
     }

@@ -28,20 +28,31 @@ class FlickrComponent extends Object {
                 throw new Exception("No response from $postUrl");
             }
 
-            // response received, make it an array or unserialize returns false
-            $response = @unserialize($response);
+            // check for a usable response if format is php_serial and not json
+            if ($postData['format'] == 'php_serial') {
+                // response received, make it an array or unserialize returns false
+                $response = @unserialize($response);
 
-            // a response was received, but could not be unserialized (ie: empty)
-            if ($response === false) {
-                throw new Exception('The response was not usable.');
+                // a response was received, but could not be unserialized (ie: empty)
+                if ($response === false) {
+                    throw new Exception('The response was not usable.');
+                }
+
+                // check to see if Flickr returned an error
+                if ($response['stat'] == 'fail') {
+                    throw new Exception(
+                        'Flickr error code '.$response['code'].': '.$response['message']
+                    );
+                }
             }
 
-            // check to see if Flickr returned an error
-            if ($response['stat'] == 'fail') {
-                throw new Exception(
-                    'Flickr error code '.$response['code'].': '.$response['message']
-                );
+            // simple check for stat:ok in the Flickr json response
+            if ($postData['format'] == 'json') {
+                if (strpos($response, '"stat":"ok"') === false) {
+                    throw new Exception('Flickr returned an error.');
+                }
             }
+
         } catch (Exception $e) {
             return $e->getMessage();
         }
