@@ -110,9 +110,7 @@ class FlickrHelper extends AppHelper {
                     }
                 }
             }
-            // build the base url to the image
-            $base = 'http://farm'.$p['farm'].'.static.flickr.com/'.$p['server'];
-            $base .= '/'.$p['id'].'_'.$p['secret'];
+
             // open the wrapper
             if ($formatType) {
                 $result .= $this->Html->tag($formatType, null, $formatAttribs);
@@ -132,12 +130,11 @@ class FlickrHelper extends AppHelper {
                 );
             }
             // the thumbnail wrapped in a href
+            $flickrThumb = $this->getPhoto($p, $thumbSize, 'img', $thumbAttribs);
+            $flickrPhoto = $this->getPhoto($p, $imgSize, 'url');
             $result .= $this->Html->link(
-                $this->Html->image(
-                    $base.$thumbSize.'.jpg',
-                    $thumbAttribs
-                ),
-                $base.$imgSize.'.jpg',
+                $flickrThumb,
+                $flickrPhoto,
                 $linkAttribs
             );
             // caption after the thumbnail
@@ -154,6 +151,30 @@ class FlickrHelper extends AppHelper {
             }
         }
         return $result;
+    }
+
+/**
+ * Build a Flickr formatted img or url
+ *
+ * @param array $flk required Keys must include farm, server, id, secret
+ * @param string $size required The Flickr code for photo size
+ * @param string $type required 'img' to return an <img> or 'url' for...an url!
+ * @param string $attribs optional Attributes if returning an <img>
+ * @return string A formated img or an url
+ * @access public
+ */
+    public function getPhoto($flk, $size, $type, $attribs = array()) {
+        $base = 'http://farm'.$flk['farm'].'.static.flickr.com/'.$flk['server'];
+        $base .= '/'.$flk['id'].'_'.$flk['secret'];
+        if ($type == 'img') {
+            $photo = $this->Html->image(
+                $base.$size.'.jpg',
+                $attribs
+            );
+        } elseif ($type == 'url') {
+            $photo = $base.$size.'.jpg';
+        }
+        return $photo;
     }
 
 /**
