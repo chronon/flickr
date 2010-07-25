@@ -15,7 +15,8 @@ class FlickrHelper extends AppHelper {
         'flickr_id',
         'flickr_secret',
         'flickr_title',
-        'flickr_datetaken'
+        'flickr_datetaken',
+        'flickr_description'
     );
     protected $_formatDefaults = array('type' => false);
     protected $_linkDefaults = array('escape' => false);
@@ -37,7 +38,7 @@ class FlickrHelper extends AppHelper {
  * default for large images (500px).
  *
  * @param array $photos required The response from Flickr as an array
- * @param array $formatAttribs optional Special key: type (see example). Default: 'type' => 'div'
+ * @param array $formatAttribs optional Special key: type (see example).
  * @param array $linkAttribs optional Attributes for the <a> wrapping the thumbnail
  * @param array $thumbAttribs optional Attributes for the <img> containing the thumbnail
  * @param array $imgAttribs optional Size for the large image. Default: 'size' => 'n'
