@@ -82,7 +82,7 @@ The helper parameters are:
 
 * @param array $formatAttribs optional Special key: type. This is what each thumbnail is wrapped in. The default is nothing. You could use things like 'type' => 'div' or 'type' => 'li' or 'type' => 'p', etc. You can also add additional HTML attributes, such as 'class' => 'thumb', 'id' => '`flickr_id`', etc. See the info on the special `flickr_` values below.
 
-* @param array $linkAttribs optional Attributes for the <a> wrapping the thumbnail. Examples (from above 'rel' => 'example1', 'title' => 'flickr_title'.
+* @param array $linkAttribs optional Attributes for the `<a>` wrapping the thumbnail. Examples (from above 'rel' => 'example1', 'title' => 'flickr_title'.
 
 * @param array $thumbAttribs optional Attributes for the <img> containing the thumbnail. Example: 'class' => 'little', 'alt' => '`flickr_title`'. There is also a special key named 'size', which determines the thumbnail size. Default is Flickr's size 's', which is 75x75. See [Flickr's size codes][6] for the list. For a 500px photo, do this: 'size' => 'n', for 240px: 'size' => 'm'. You can also use numbers (but they must be valid Flickr sizes): 'size' => 100.
 
