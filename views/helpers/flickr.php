@@ -105,6 +105,8 @@ class FlickrHelper extends AppHelper {
                         $v = str_replace('flickr_', '', $v);
                         if ($k == 'id') {
                             ${$attrib.'Attribs'}[$k] = $attrib.$p[$v];
+                        } elseif ($k == 'title') {
+                            ${$attrib.'Attribs'}[$k] = htmlentities($p[$v]);
                         } else {
                             ${$attrib.'Attribs'}[$k] = $p[$v];
                         }
@@ -119,7 +121,7 @@ class FlickrHelper extends AppHelper {
             // set the caption to a Flickr val or use the supplied val
             if ($captionType) {
                 if (isset($p[$caption])) {
-                    $cap = $p[$caption];
+                    $cap = htmlentities($p[$caption]['_content']);
                 }
             }
             // cpation before the thumbnail
