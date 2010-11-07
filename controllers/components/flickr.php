@@ -19,6 +19,14 @@ class FlickrComponent extends Object {
         // check for some default values (set in bootstrap or core), combine with data
         $postData = Set::merge(Configure::read('Flickr.defaults'), $postData);
 
+        // defaults if not set:
+        if (!isset($postData['format'])) {
+            $postData['format'] = 'php_serial';
+        }
+        if (!isset($postData['method'])) {
+            $postData['method'] = 'flickr.photos.search';
+        }
+
         // make the request
         try {
             $response = $this->__doPost($postUrl, $postData, $options);
