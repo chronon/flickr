@@ -13,16 +13,16 @@ This is a [CakePHP][1] plugin consisting of one component and one helper that ma
 
 Global configuration is optional, but useful. You can put default values in app/config/bootstrap.php or app/config/core.php like this:
 
-    Configure::write('Flickr.posting_url', 'http://api.flickr.com/services/rest/');
-    Configure::write(
-        'Flickr.defaults', array(
-            'api_key' => '111122223333aaaabbbbccccdddd',
-            'user_id' => '1234567@N66',
-            'method' => 'flickr.photos.search',
-            'format' => 'php_serial',
-            'extras' => 'description, date_taken'
-        )
-    );
+	Configure::write('Flickr.posting_url', 'http://api.flickr.com/services/rest/');
+	Configure::write(
+		'Flickr.defaults', array(
+			'api_key' => '111122223333aaaabbbbccccdddd',
+			'user_id' => '1234567@N66',
+			'method' => 'flickr.photos.search',
+			'format' => 'php_serial',
+			'extras' => 'description, date_taken'
+		)
+	);
 
 Pretty much any option available by the [Flickr API][3] can go here. All defaults can be overridden/replaced in your controller as needed.
 
@@ -34,47 +34,47 @@ First, you might want to take a look at this plugin's [demo project][4] code and
 
 Add the plugin's component and helper to your controller:
 
-    public $components = array('Flickr.Flickr');
-    public $helpers = array('Flickr.Flickr');
+	public $components = array('Flickr.Flickr');
+	public $helpers = array('Flickr.Flickr');
 
 Using the defaults above (replacing the `api_key` and `user_id` values with your own), this would get 20 photos from `user_id`'s account with the tag "Public":
 
-    public function somephotos() {
-        $params = array(
-            'tags' => 'Public',
-            'per_page' => 20,
-        );
-    	$photos = $this->Flickr->flickrRequest($params);
-    	$this->set('photos', $photos);
-    }
+	public function somephotos() {
+		$params = array(
+			'tags' => 'Public',
+			'per_page' => 20,
+		);
+		$photos = $this->Flickr->flickrRequest($params);
+		$this->set('photos', $photos);
+	}
 
 The $photos variable would be an array, which you or the included Flickr helper can do something with. Again, check the [Flickr API][3] for all of the available options.
 
 This example gets all of the Flickr sets for `user_id`, including everything needed to display the set thumbnail, title, and description:
 
-    public function somesets() {
-        $params = array('method' => 'flickr.photosets.getList');
-        $sets = $this->Flickr->flickrRequest($params);
-    	$this->set('sets', $sets);
-    }
+	public function somesets() {
+		$params = array('method' => 'flickr.photosets.getList');
+		$sets = $this->Flickr->flickrRequest($params);
+		$this->set('sets', $sets);
+	}
 
 ### Helper:
 
 Output the 20 photos tagged "Public" you set in the above somephotos() method:
 
-    echo $this->Flickr->getPhotos(
-        $photos,
-        array('type' => 'div'),
-        array('rel' => 'example1', 'title' => 'flickr_title')
-    );
+	echo $this->Flickr->getPhotos(
+		$photos,
+		array('type' => 'div'),
+		array('rel' => 'example1', 'title' => 'flickr_title')
+	);
 
 The resulting HTML would be:
 
-    <div>
-        <a href="http://farm5.static.flickr.com/4079/4750870838_52fc9c7167.jpg" rel="example1" title="Doi Mae Salong">
-            <img src="http://farm5.static.flickr.com/4079/4750870838_52fc9c7167_s.jpg" alt="" />
-        </a>
-    </div>
+	<div>
+		<a href="http://farm5.static.flickr.com/4079/4750870838_52fc9c7167.jpg" rel="example1" title="Doi Mae Salong">
+			<img src="http://farm5.static.flickr.com/4079/4750870838_52fc9c7167_s.jpg" alt="" />
+		</a>
+	</div>
 
 The helper parameters are:
 
