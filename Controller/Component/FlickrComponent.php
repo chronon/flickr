@@ -1,5 +1,5 @@
 <?php
-class FlickrComponent extends Object {
+class FlickrComponent extends Component {
 
 /**
  * POST a request to the Flickr API
