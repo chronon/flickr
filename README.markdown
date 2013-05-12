@@ -104,5 +104,5 @@ These values act as variables and use the corresponding values returned from Fli
  [2]: http://flickr.com/
  [3]: http://www.flickr.com/services/api/
  [4]: http://github.com/chronon/flickr_demos
- [5]: http://chronon.com/flickr_demos/demos/
+ [5]: http://flickrdemo.chronon.us/
  [6]: http://www.flickr.com/services/api/misc.urls.html
